@@ -1,6 +1,7 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
 const { checkRecord, insertRecord } = require('./mongo-connect.js');
+const { sendMessage } = require('./tg-bot.js');
 
 const url = process.env.THREAD_URL || 'https://news.ycombinator.com/item?id=40224213';
 
@@ -22,7 +23,7 @@ test.describe('Get Thread Items', () => {
     const posts = await page.$$('.default:near(td.ind[indent="0"])');
     
     // Process each post
-    // let i = 0
+    let i = 0
     for (const post of posts) {
 
       const id_href = await post.evaluate(element => (element.querySelector('span.age a')?.getAttribute('href') || '').trim());
@@ -53,13 +54,9 @@ test.describe('Get Thread Items', () => {
         }
       }
     
-    //   if (i >= 3) break;
+      if (i >= 1) break;
 
-
-      // Insert the post details into the database
-      if (text) {
-        insertRecord({
-        // console.log({
+      const data = {
           id,
           title,
           date,
@@ -69,8 +66,22 @@ test.describe('Get Thread Items', () => {
           hasRemote,
           hasQA,
           hasFrontend,
-        });
-        // i++;
+        }
+      // Insert the post details into the database
+      if (data) {
+        insertRecord(data);
+        await sendMessage(`
+        <b>Date:</b> ${data.date}
+
+        ${data.text}
+        
+        <b>URLs:</b> ${data.urls.join('\n')}
+        
+        <b>Has Remote:</b> ${data.hasRemote ? 'Yes' : 'No'}
+        <b>Has QA:</b> ${data.hasQA ? 'Yes' : 'No'}
+        <b>Has Frontend:</b> ${data.hasFrontend ? 'Yes' : 'No'}
+        `);
+        i++;
       }
     }
   });
