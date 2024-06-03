@@ -1,19 +1,32 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
+const { insertData, insertRecord } = require('./mongo-connect.js');
 
-test('has title', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
+test.describe('Get Thread Items', () => {
+  test('Load Thread Page and Get the Data', async ({ page }) => {
+    await page.goto('https://news.ycombinator.com/item?id=36573871'); // TODO add finding thread
 
-  // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/Playwright/);
-});
+    // Expect a title to contain a Who is hiring.
+    await expect(page).toHaveTitle(/Ask HN: Who is hiring?/);
 
-test('get started link', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
+    let postTitle = await (await page.locator('.titleline')).textContent()
+    if (!postTitle) {
+      postTitle = 'unidentified title';
+    }
+    await page.waitForSelector('tbody');
 
-  // Click the get started link.
-  await page.getByRole('link', { name: 'Get started' }).click();
+    const posts = await page.$$('.comment:near(td.ind[indent="0"])');
+    
+    // Retrieve and send the text content of the element to mongo
+    for (const post of posts) {
+      const textContent = await post.evaluate(element => element.textContent);
+      if (textContent) {
+        insertRecord({
+          title: postTitle.trim(),
+          post: textContent.trim(),
+        })
+      }
+    }
 
-  // Expects page to have a heading with the name of Installation.
-  await expect(page.getByRole('heading', { name: 'Installation' })).toBeVisible();
+  });
 });
