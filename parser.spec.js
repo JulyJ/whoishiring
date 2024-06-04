@@ -3,7 +3,7 @@ const { test, expect } = require('@playwright/test');
 const { checkRecord, insertRecord } = require('./mongo-connect.js');
 const { sendMessage } = require('./tg-bot.js');
 
-const url = process.env.THREAD_URL || 'https://news.ycombinator.com/item?id=40224213';
+const url = process.env.THREAD_URL || 'https://news.ycombinator.com/item?id=40563283';
 
 test.describe('Get Thread Items', () => {
   test('Load Thread Page and Get the Data', async ({ page }) => {
@@ -23,7 +23,7 @@ test.describe('Get Thread Items', () => {
     const posts = await page.$$('.default:near(td.ind[indent="0"])');
     
     // Process each post
-    let i = 0
+    // let i = 0
     for (const post of posts) {
 
       const id_href = await post.evaluate(element => (element.querySelector('span.age a')?.getAttribute('href') || '').trim());
@@ -54,9 +54,10 @@ test.describe('Get Thread Items', () => {
         }
       }
     
-      if (i >= 1) break;
+    //   if (i >= 1) break;
 
       const data = {
+          time: new Date().getTime(),
           id,
           title,
           date,
@@ -81,7 +82,7 @@ test.describe('Get Thread Items', () => {
         <b>Has QA:</b> ${data.hasQA ? 'Yes' : 'No'}
         <b>Has Frontend:</b> ${data.hasFrontend ? 'Yes' : 'No'}
         `);
-        i++;
+        // i++;
       }
     }
   });
