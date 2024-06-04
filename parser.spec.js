@@ -2,8 +2,10 @@
 const { test, expect } = require('@playwright/test');
 const { checkRecord, insertRecord } = require('./mongo-connect.js');
 const { sendMessage } = require('./tg-bot.js');
+const DEBUG = false;
 
 const url = process.env.THREAD_URL || 'https://news.ycombinator.com/item?id=40563283';
+const threadId = url.match(/\d+/)?.[0]
 
 test.describe('Get Thread Items', () => {
   test('Load Thread Page and Get the Data', async ({ page }) => {
@@ -23,7 +25,8 @@ test.describe('Get Thread Items', () => {
     const posts = await page.$$('.default:near(td.ind[indent="0"])');
     
     // Process each post
-    // let i = 0
+    let i = 0
+
     for (const post of posts) {
 
       const id_href = await post.evaluate(element => (element.querySelector('span.age a')?.getAttribute('href') || '').trim());
@@ -31,11 +34,26 @@ test.describe('Get Thread Items', () => {
       
       
       // If the post already exists, continue to the next one
-      if (id && await checkRecord(id)) {
+      if (!DEBUG){
+        if (id && await checkRecord(id)) {
           continue;
           }
+      }
+      
 
-      const text = await post.evaluate(element => element.children[2].textContent?.trim());
+      const text = (await page.evaluate((post) => {
+        const childNodes = post.querySelector('.commtext')?.childNodes;
+        const textContents = [];
+        childNodes?.forEach(node => {
+            const text = node.textContent?.trim();
+            if (text) {
+                textContents.push(text);
+            }
+          });
+          return textContents;
+      }, post)).join('\n');
+
+
       const author = await post.evaluate(element => (element.querySelector('a.hnuser')?.textContent || '').trim());
       const date = await post.evaluate(element => (element.querySelector('span.age')?.getAttribute('title') || '').trim());
       const hasRemote = /remote/i.test(text || '');
@@ -53,12 +71,14 @@ test.describe('Get Thread Items', () => {
           urls.push(href.trim());
         }
       }
-    
-    //   if (i >= 1) break;
+      if (DEBUG) {
+        if (i >= 3) break;
+      }
 
       const data = {
           time: new Date().getTime(),
           id,
+          threadId,
           title,
           date,
           author,
@@ -70,19 +90,24 @@ test.describe('Get Thread Items', () => {
         }
       // Insert the post details into the database
       if (data) {
-        insertRecord(data);
-        await sendMessage(`
-        <b>Date:</b> ${data.date}
+        if (!DEBUG){
+          insertRecord(data);
+        //   await sendMessage(`
+        // <b>Date:</b> ${data.date}
 
-        ${data.text}
+        // ${data.text}
         
-        <b>URLs:</b> ${data.urls.join('\n')}
+        // <b>URLs:</b> ${data.urls.join('\n')}
         
-        <b>Has Remote:</b> ${data.hasRemote ? 'Yes' : 'No'}
-        <b>Has QA:</b> ${data.hasQA ? 'Yes' : 'No'}
-        <b>Has Frontend:</b> ${data.hasFrontend ? 'Yes' : 'No'}
-        `);
-        // i++;
+        // <b>Has Remote:</b> ${data.hasRemote ? 'Yes' : 'No'}
+        // <b>Has QA:</b> ${data.hasQA ? 'Yes' : 'No'}
+        // <b>Has Frontend:</b> ${data.hasFrontend ? 'Yes' : 'No'}
+        // `);
+        } else {
+          console.log(data);
+        }
+        
+        i++;
       }
     }
   });
