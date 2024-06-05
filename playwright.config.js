@@ -34,6 +34,7 @@ module.exports = defineConfig({
     trace: 'on-first-retry',
     uri: process.env.MONGODB_URI,
     dbName: process.env.MONGODB_DB,
+    url: process.env.THREAD_URL
   },
 
   /* Configure projects for major browsers */
