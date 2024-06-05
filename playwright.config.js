@@ -32,8 +32,8 @@ module.exports = defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
-    uri: process.env.URI,
-    dbName: process.env.DBNAME,
+    uri: process.env.MONGODB_URI,
+    dbName: process.env.MONGODB_DB,
   },
 
   /* Configure projects for major browsers */
