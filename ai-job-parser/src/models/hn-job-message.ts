@@ -1,6 +1,8 @@
 export interface HnJobMessage {
     _id: any;
+    time: number;
     id: string;
+    threadId: string;
     title: string;
     text: string;
     author: string;
