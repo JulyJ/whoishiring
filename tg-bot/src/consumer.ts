@@ -1,13 +1,12 @@
 import { Consumer, Kafka } from "kafkajs";
 import { HnJobMessage } from "./models/hn-job-message";
-import axios from "axios";
 
 type Offset = "beginning" | "latest" | string;
 
 export class TgBotConsumer {
     private redpanda: Kafka;
     private consumer: Consumer;
-    private offset: Offset = "latest";
+    private offset: Offset | undefined;
     private topic = "";
     private onMessage: (message: HnJobMessage) => Promise<void>;
 
@@ -28,7 +27,7 @@ export class TgBotConsumer {
 
         this.topic = topic;
         this.onMessage = onMessage;
-        this.consumer = this.redpanda.consumer({ groupId: "tg-bot" });
+        this.consumer = this.redpanda.consumer({ groupId: "tg-bot-v2" });
     }
 
     async connect() {
@@ -36,8 +35,8 @@ export class TgBotConsumer {
             console.log(`[TgBotConsumer] Connecting to the topic: ${this.topic} (offset: ${this.offset})...`);
 
             const fromBeginning = this.offset === "beginning";
-            console.log(`[TgBotConsumer] fromBeginning: ${fromBeginning}`);
             await this.consumer.connect();
+            console.log("[TgBotConsumer] Connected to Kafka...");
             await this.consumer.subscribe({
                 fromBeginning,
                 topic: this.topic,
@@ -46,17 +45,14 @@ export class TgBotConsumer {
             this.consumer.run({
                 eachMessage: async ({ topic, partition, message }) => {
                     const parsedMessage = JSON.parse((message.value as Buffer).toString());
-                    if (!parsedMessage || !parsedMessage.operationType || parsedMessage.operationType !== "insert") {
-                        return;
-                    }
-                    const fullDoc = parsedMessage.fullDocument;
+                    const parsedJob = parsedMessage.parsed;
 
                     if (this.isPaused) {
                         console.log("Consumer is paused, waiting to resume...");
                         return;
                     }
 
-                    await this.onMessage(fullDoc as HnJobMessage);
+                    await this.onMessage(parsedJob);
 
                     this.requestCount++;
                     if (this.requestCount >= this.throttleLimit) {
@@ -74,7 +70,7 @@ export class TgBotConsumer {
                 },
             });
 
-            if (this.offset !== "latest" && this.offset !== "beginning") {
+            if (this.offset !== undefined && this.offset !== "latest" && this.offset !== "beginning") {
                 console.log(`[TgBotConsumer] Seeking to offset: ${this.offset}`);
                 this.consumer.seek({
                     topic: this.topic,

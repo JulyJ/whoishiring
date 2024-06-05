@@ -1,18 +1,42 @@
 import axios from "axios";
 import { TgBotConsumer } from "./consumer";
-import { HnJobMessage } from "./models/hn-job-message";
 
 require("dotenv").config();
 
-async function sendMessage(botToken: string, chatId: string, message: string) {
+function formatMessage(job: any) {
+    const date = `<b>Date:</b> ${job.date}\n`;
+    const title = job.title ? `<b>Title:</b> ${job.title}\n\n` : "";
+    const company = job.company ? `<b>Company:</b> ${job.company}\n\n` : "";
+    let description = job.jobDescription ? `<b>Description:</b> ${job.jobDescription}\n\n` : "";
+    description
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    const urls = job.urls ? `<b>URLs:</b> ${job.urls.join("\n")}\n\n` : "";
+
+    const remote = job.hasRemote ? "✅" : "❌";
+    const qa = job.hasQA ? "✅" : "❌";
+    const frontend = job.hasFrontend ? "✅" : "❌";
+
+    const tags = `<b>Tags:</b> ${job.tags.join(", ")}\n`;
+
+    return `${date}${company}${title}${description}${urls}${tags}
+🌐 Remote: ${remote}
+🧪 QA: ${qa}
+🖥️ Front-end: ${frontend}`;
+}
+
+async function sendMessage(botToken: string, chatId: string, job: any) {
     try {
         const payload = {
             chat_id: chatId,
-            text: message,
+            text: formatMessage(job),
             parse_mode: "html", // html | markdown
         };
 
-        console.log("botToken:", botToken);
+        console.log("Sending message:", payload);
 
         const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
 
@@ -23,21 +47,20 @@ async function sendMessage(botToken: string, chatId: string, message: string) {
 }
 
 async function start() {
-    const processMessage = async (message: HnJobMessage) => {
+    const processMessage = async (message: any) => {
         console.log("Processing Message:", message);
         await sendMessage(
             process.env.TELEGRAM_BOT_TOKEN as string,
             process.env.TELEGRAM_CHAT_ID as string,
-            message.text,
+            message || {},
         );
     };
 
-    let jobConsumerOffset = process.env.JOBS_CONSUMER_OFFSET || "latest";
     const jobConsumer = new TgBotConsumer(
         process.env.KAFKA_BROKER_URI as string,
         process.env.KAFKA_TOPIC as string,
         processMessage,
-        jobConsumerOffset,
+        process.env.JOBS_CONSUMER_OFFSET,
     );
 
     process.on("SIGINT", async () => {
