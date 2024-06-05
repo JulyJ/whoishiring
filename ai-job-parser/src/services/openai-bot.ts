@@ -9,6 +9,7 @@ export class OpenAIBot {
     {
         jobTitle: "",
         jobDescription: "",
+        company: "",
         location: location or remote or null if unknown,
         contact: "",
         notes: "",

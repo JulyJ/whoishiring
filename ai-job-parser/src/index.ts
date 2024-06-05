@@ -38,12 +38,11 @@ async function start() {
         });
     };
 
-    let jobConsumerOffset = process.env.JOBS_CONSUMER_OFFSET || "latest";
     const jobConsumer = new JobConsumer(
         process.env.KAFKA_BROKER_URI as string,
         process.env.RAW_JOBS_TOPIC as string,
         parseMessage,
-        jobConsumerOffset,
+        process.env.JOBS_CONSUMER_OFFSET,
     );
 
     process.on("SIGINT", async () => {
