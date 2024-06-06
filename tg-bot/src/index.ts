@@ -1,38 +1,45 @@
 import axios from "axios";
 import { TgBotConsumer } from "./consumer";
+import { HnJobMessage } from "./models/hn-job-message";
 
 require("dotenv").config();
 
-function formatMessage(job: any) {
+function formatMessage(job: any, originalPost: HnJobMessage) {
+    const ogText = originalPost.text.split("\n");
+    const title = `<b>${ogText[0]}</b>\n\n`;
     const date = `<b>Date:</b> ${job.date}\n`;
-    const title = job.title ? `<b>Title:</b> ${job.title}\n\n` : "";
     const company = job.company ? `<b>Company:</b> ${job.company}\n\n` : "";
-    let description = job.jobDescription ? `<b>Description:</b> ${job.jobDescription}\n\n` : "";
+
+    const urls = job.urls ? `<b>URLs:</b> ${job.urls.join("\n")}\n\n` : "";
+
+    const tags = `<b>Tags:</b> ${job.tags.join(", ")}\n`;
+
+    const remote = job.hasRemote ? "✅" : "❌";
+    const qa = job.hasQA ? "✅" : "❌";
+    const frontend = job.hasFrontend ? "✅" : "❌";
+
+    let description = ogText.slice(1).join("\n");
     description
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
-    const urls = job.urls ? `<b>URLs:</b> ${job.urls.join("\n")}\n\n` : "";
+    description = `<b>Description:</b> ${description}\n\n`;
 
-    const remote = job.hasRemote ? "✅" : "❌";
-    const qa = job.hasQA ? "✅" : "❌";
-    const frontend = job.hasFrontend ? "✅" : "❌";
-
-    const tags = `<b>Tags:</b> ${job.tags.join(", ")}\n`;
-
-    return `${date}${company}${title}${description}${urls}${tags}
+    return `${title}${date}${company}${urls}${tags}
 🌐 Remote: ${remote}
 🧪 QA: ${qa}
-🖥️ Front-end: ${frontend}`;
+🖥️ Front-end: ${frontend}
+
+${description}`;
 }
 
-async function sendMessage(botToken: string, chatId: string, job: any) {
+async function sendMessage(botToken: string, chatId: string, post: any, originalPost: HnJobMessage) {
     try {
         const payload = {
             chat_id: chatId,
-            text: formatMessage(job),
+            text: formatMessage(post, originalPost),
             parse_mode: "html", // html | markdown
         };
 
@@ -47,12 +54,13 @@ async function sendMessage(botToken: string, chatId: string, job: any) {
 }
 
 async function start() {
-    const processMessage = async (message: any) => {
+    const processMessage = async (message: any, originalPost: any) => {
         console.log("Processing Message:", message);
         await sendMessage(
             process.env.TELEGRAM_BOT_TOKEN as string,
             process.env.TELEGRAM_CHAT_ID as string,
             message || {},
+            originalPost,
         );
     };
 

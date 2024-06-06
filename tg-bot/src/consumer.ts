@@ -8,14 +8,19 @@ export class TgBotConsumer {
     private consumer: Consumer;
     private offset: Offset | undefined;
     private topic = "";
-    private onMessage: (message: HnJobMessage) => Promise<void>;
+    private onMessage: (post: any, originalPost: HnJobMessage) => Promise<void>;
 
     private isPaused = false;
     private throttleLimit = 5;
     private requestCount = 0;
     private throttleInterval = 20 * 1000;
 
-    constructor(kafkaBrokerUri: string, topic: string, onMessage: (message: any) => Promise<void>, offset?: Offset) {
+    constructor(
+        kafkaBrokerUri: string,
+        topic: string,
+        onMessage: (post: any, originalPost: HnJobMessage) => Promise<void>,
+        offset?: Offset,
+    ) {
         this.redpanda = new Kafka({
             clientId: "tg-bot-hn-jobs",
             brokers: [kafkaBrokerUri],
@@ -45,14 +50,15 @@ export class TgBotConsumer {
             this.consumer.run({
                 eachMessage: async ({ topic, partition, message }) => {
                     const parsedMessage = JSON.parse((message.value as Buffer).toString());
-                    const parsedJob = parsedMessage.parsed;
+                    const parsedPost = parsedMessage.parsed;
+                    const originalPost = parsedMessage.original;
 
                     if (this.isPaused) {
                         console.log("Consumer is paused, waiting to resume...");
                         return;
                     }
 
-                    await this.onMessage(parsedJob);
+                    await this.onMessage(parsedPost, originalPost);
 
                     this.requestCount++;
                     if (this.requestCount >= this.throttleLimit) {
