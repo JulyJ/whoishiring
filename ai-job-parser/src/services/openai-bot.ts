@@ -4,11 +4,11 @@ import { HnJobMessage } from "../models/hn-job-message";
 export class OpenAIBot {
     private openai: OpenAI;
     private systemPrompt = `You're an AI assistant used to parse job posting from hacker news comment.
-    Given the following comment message retrieve job information and relevant tags (remote, frontend/backend/qa/multiple positions and languages required) in the following json format:
+    Given the following comment message retrieve job information and relevant tags (remote, frontend/backend/qa/multiple positions and complete technology stack) in the following json format:
 
     {
-        jobTitle: "",
-        jobDescription: "",
+        title: first line of the comment,
+        description: "",
         company: "",
         location: location or remote or null if unknown,
         contact: "",
