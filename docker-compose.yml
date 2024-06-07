@@ -1,0 +1,151 @@
+version: "3.7"
+networks:
+    redpanda_network:
+        driver: bridge
+services:
+    redpanda-0:
+        command:
+            - redpanda
+            - start
+            - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:19092
+            # replace external with your host IP
+            - --advertise-kafka-addr internal://redpanda-0:9092,external://localhost:19092
+            - --advertise-pandaproxy-addr internal://redpanda-0:8082,external://localhost:18082
+            - --pandaproxy-addr internal://0.0.0.0:8082,external://0.0.0.0:18082
+            - --schema-registry-addr internal://0.0.0.0:8081,external://0.0.0.0:18081
+            - --rpc-addr redpanda-0:33145
+            - --advertise-rpc-addr redpanda-0:33145
+            - --mode dev-container
+            - --smp 1
+            - --default-log-level=info
+        image: docker.redpanda.com/redpandadata/redpanda:v24.1.3
+        container_name: redpanda-0
+        volumes:
+            - redpanda_data:/var/lib/redpanda/data
+            - redpanda_tmp:/tmp
+        networks:
+            - redpanda_network
+        ports:
+            - 18081:18081
+            - 18082:18082
+            - 19092:19092
+            - 19644:9644
+
+    console:
+        container_name: redpanda-console
+        image: docker.redpanda.com/redpandadata/console:v2.5.2
+        networks:
+            - redpanda_network
+        entrypoint: /bin/sh
+        command: -c 'echo "$$CONSOLE_CONFIG_FILE" > /tmp/config.yml; /app/console'
+        environment:
+            CONFIG_FILEPATH: /tmp/config.yml
+            CONSOLE_CONFIG_FILE: |
+                kafka:
+                  brokers: ["redpanda-0:9092"]
+                  schemaRegistry:
+                    enabled: true
+                    urls: ["http://redpanda-0:8081"]
+                redpanda:
+                  adminApi:
+                    enabled: true
+                    urls: ["http://redpanda-0:9644"]
+                connect:
+                  enabled: true
+                  clusters:
+                    - name: mongo-source
+                      url: http://connect:8083
+        ports:
+            - 8085:8080
+        depends_on:
+            - redpanda-0
+
+    connect:
+        image: redpandadata/connectors
+        networks:
+            - redpanda_network
+        depends_on:
+            - redpanda-0
+        ports:
+            - 8083:8083
+        volumes:
+            - connect_plugins:/opt/kafka/connect-plugins
+            - connect_plugins:/opt/kafka/redpanda-plugins
+        environment:
+            CONNECT_CONFIGURATION: |
+                key.converter=org.apache.kafka.connect.storage.StringConverter
+                value.converter=org.apache.kafka.connect.storage.StringConverter
+                group.id=mongodb-connector
+                offset.storage.topic=_connectors_offsets
+                config.storage.topic=_connectors_configs
+                status.storage.topic=_connectors_status
+                config.storage.replication.factor=-1
+                offset.storage.replication.factor=-1
+                status.storage.replication.factor=-1
+            CONNECT_BOOTSTRAP_SERVERS: "redpanda-0:9092"
+            CONNECT_METRICS_ENABLED: "false"
+            CONNECT_GC_LOG_ENABLED: "false"
+            CONNECT_HEAP_OPTS: -Xms1G -Xmx1G
+            #CONNECT_PLUGIN_PATH: "/opt/kafka/connect-plugins"
+            CONNECT_AUTO_CREATE_TOPICS_ENABLE: "true"
+
+    mongo1:
+        image: "mongo:4.4.29"
+        volumes:
+            - mongodb_data:/data/db
+        networks:
+            - redpanda_network
+        ports:
+            - 27017:27017
+        restart: always
+        command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+
+    mongo-express:
+        image: "mongo-express:latest"
+        depends_on:
+            - mongo1
+        networks:
+            - redpanda_network
+        ports:
+            - 8090:8081
+        environment:
+            ME_CONFIG_MONGODB_SERVER: ${ME_CONFIG_MONGODB_SERVER}
+            ME_CONFIG_BASICAUTH_USERNAME: ${ME_CONFIG_BASICAUTH_USERNAME}
+            ME_CONFIG_BASICAUTH_PASSWORD: ${ME_CONFIG_BASICAUTH_PASSWORD}
+
+    hn-parser:
+        image: hn-parser
+        build:
+            context: .
+            dockerfile: ./hn-parser/Dockerfile
+        networks:
+            - redpanda_network
+        depends_on:
+            - mongo1
+
+    ai-job-parser:
+        image: ai-job-parser
+        build:
+            context: .
+            dockerfile: ./ai-job-parser/Dockerfile
+        networks:
+            - redpanda_network
+        depends_on:
+            - mongo1
+            - redpanda-0
+
+    tg-bot:
+        image: tg-bot
+        build:
+            context: .
+            dockerfile: ./tg-bot/Dockerfile
+        networks:
+            - redpanda_network
+        depends_on:
+            - redpanda-0
+
+volumes:
+    redpanda_data:
+    redpanda_tmp:
+    connect_plugins:
+    mongodb_data:
