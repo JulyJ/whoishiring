@@ -117,7 +117,7 @@ services:
         image: hn-parser
         build:
             context: .
-            dockerfile: ./hn-parser/Dockerfile
+            dockerfile: ./apps/hn-parser/Dockerfile
         networks:
             - redpanda_network
         depends_on:
@@ -127,7 +127,7 @@ services:
         image: ai-job-parser
         build:
             context: .
-            dockerfile: ./ai-job-parser/Dockerfile
+            dockerfile: ./apps/ai-job-parser/Dockerfile
         networks:
             - redpanda_network
         depends_on:
@@ -138,7 +138,7 @@ services:
         image: tg-bot
         build:
             context: .
-            dockerfile: ./tg-bot/Dockerfile
+            dockerfile: ./apps/tg-bot/Dockerfile
         networks:
             - redpanda_network
         depends_on:

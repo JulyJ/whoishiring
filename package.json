@@ -1,0 +1,19 @@
+{
+    "name": "whoishiring-parser",
+    "private": true,
+    "workspaces": [
+        "apps/*",
+        "packages/*"
+    ],
+    "version": "1.0.0",
+    "description": "Who is hiring thread Hacker News thread parser with Playwright",
+    "main": "index.js",
+    "scripts": {},
+    "keywords": [],
+    "author": "",
+    "license": "MIT",
+    "packageManager": "npm@10.2.0",
+    "devDependencies": {
+        "turbo": "^2.0.3"
+    }
+}
