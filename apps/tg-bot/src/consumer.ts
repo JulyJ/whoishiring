@@ -1,5 +1,5 @@
 import { Consumer, Kafka } from "kafkajs";
-import { HnJobMessage } from "./models/hn-job-message";
+import { HnJobMessage } from "./models/hn-job-message.js";
 
 type Offset = "beginning" | "latest" | string;
 

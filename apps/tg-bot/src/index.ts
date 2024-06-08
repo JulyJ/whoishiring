@@ -1,8 +1,9 @@
-import axios from "axios";
-import { TgBotConsumer } from "./consumer";
-import { HnJobMessage } from "./models/hn-job-message";
+import { TgBotConsumer } from "./consumer.js";
+import { HnJobMessage } from "./models/hn-job-message.js";
+import { sendMessage as tgSendMessage } from "@repo/tg-service";
+import dotenv from "dotenv";
 
-require("dotenv").config();
+dotenv.config();
 
 function formatDate(dateStr: string): string {
     const date = new Date(dateStr);
@@ -48,19 +49,13 @@ ${description}`;
 
 async function sendMessage(botToken: string, chatId: string, post: any, originalPost: HnJobMessage) {
     try {
-        const payload = {
-            chat_id: chatId,
-            text: formatMessage(post, originalPost),
-            parse_mode: "html", // html | markdown
-        };
+        const formattedMessage = formatMessage(post, originalPost);
 
-        console.log("Sending message:", payload);
+        console.log("Sending message:", formattedMessage);
 
-        const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
-
-        return axios.post(url, payload);
+        tgSendMessage(botToken, chatId, formattedMessage);
     } catch (error) {
-        console.error("API call failed:", error);
+        console.error("[TgBot] Failed to send a message:", error);
     }
 }
 

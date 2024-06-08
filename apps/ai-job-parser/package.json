@@ -4,6 +4,7 @@
     "main": "src/index.ts",
     "scripts": {
         "dev": "tsc && node dist/index.js",
+        "build": "tsc",
         "check-types": "tsc --noEmit",
         "test": "echo \"Error: no test specified\" && exit 1"
     },

@@ -1,0 +1,19 @@
+{
+    "name": "@repo/tg-service",
+    "version": "1.0.0",
+    "description": "",
+    "main": "dist/tg-service.js",
+    "types": "dist/tg-service.d.ts",
+    "type": "module",
+    "author": "",
+    "license": "ISC",
+    "scripts": {
+        "build": "tsc"
+    },
+    "devDependencies": {
+        "@repo/typescript-config": "*",
+        "@types/node": "^20.10.0",
+        "axios": "^1.7.2",
+        "typescript": "^5.4.5"
+    }
+}

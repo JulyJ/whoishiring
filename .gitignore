@@ -6,4 +6,5 @@ blob-report/
 playwright/.cache/
 .turbo
 .next
+dist/
 
