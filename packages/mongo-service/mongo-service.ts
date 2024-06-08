@@ -1,7 +1,13 @@
 import { MongoClient } from 'mongodb';
+import dotenv from 'dotenv';
+
+// Read from default ".env" file.
+dotenv.config();
+
 
 const uri: string = process.env.MONGODB_URI || '';
 const dbName: string = process.env.MONGODB_DB || '';
+const dbCollectionName: string = process.env.MONGODB_COLLECTION || '';
 
 interface Data {
   id?: string;
@@ -32,7 +38,7 @@ export async function insertData(data: Data[]): Promise<void> {
 export async function insertRecord(data: Data): Promise<void> {
   const client = await connectToDatabase();
   const db = client.db(dbName);
-  const collection = db.collection('jobs');
+  const collection = db.collection(dbCollectionName);
 
   try {
     await collection.insertOne(data);
@@ -47,7 +53,7 @@ export async function insertRecord(data: Data): Promise<void> {
 export async function deleteRecord(data: string): Promise<void> {
   const client = await connectToDatabase();
   const db = client.db(dbName);
-  const collection = db.collection('jobs');
+  const collection = db.collection(dbCollectionName);
 
   try {
     const query = { id: data };
@@ -63,7 +69,7 @@ export async function deleteRecord(data: string): Promise<void> {
 export async function checkRecord(data: string): Promise<boolean> {
   const client = await connectToDatabase();
   const db = client.db(dbName);
-  const collection = db.collection('jobs');
+  const collection = db.collection(dbCollectionName);
 
   try {
     const query = { id: data };

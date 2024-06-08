@@ -1,0 +1,12 @@
+{
+  "name": "@repo/mongo-service",
+  "version": "1.0.0",
+  "description": "Connector to the Mongo DB",
+  "main": "mongo-service.ts",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
