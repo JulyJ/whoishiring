@@ -38,7 +38,7 @@ test.describe('Get Thread Items', () => {
     const posts = await page.$$('.default:near(td.ind[indent="0"])');
     
     // Process each post
-    let i = 0;
+    let cnt = 0;
 
     for (const post of posts) {
 
@@ -82,7 +82,7 @@ test.describe('Get Thread Items', () => {
         }
       }
       if (DEBUG) {
-        if (i >= 3) break;
+        if (cnt >= 3) break;
       }
 
       const data: PostData = {
@@ -107,8 +107,9 @@ test.describe('Get Thread Items', () => {
           console.log(data);
         }
         
-        i++;
+        cnt++;
       }
     }
+    console.log(`${cnt} new posts added to the database`);
   });
 });
