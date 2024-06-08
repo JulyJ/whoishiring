@@ -1,6 +1,5 @@
 import { test, expect } from '@playwright/test';
 import { checkRecord, insertRecord } from '@repo/mongo-service';
-import { sendMessage } from './tg-bot';
 
 const DEBUG = false;
 
@@ -104,20 +103,6 @@ test.describe('Get Thread Items', () => {
       if (data) {
         if (!DEBUG){
           insertRecord(data);
-          // Uncomment the following lines if you want to send messages
-          /*
-          await sendMessage(`
-            <b>Date:</b> ${data.date}
-
-            ${data.text}
-            
-            <b>URLs:</b> ${data.urls.join('\n')}
-            
-            <b>Has Remote:</b> ${data.hasRemote ? 'Yes' : 'No'}
-            <b>Has QA:</b> ${data.hasQA ? 'Yes' : 'No'}
-            <b>Has Frontend:</b> ${data.hasFrontend ? 'Yes' : 'No'}
-          `);
-          */
         } else {
           console.log(data);
         }

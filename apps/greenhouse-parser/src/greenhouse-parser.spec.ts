@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { checkRecord, insertRecord } from '@repo/mongo-service';
-import { sendMessage } from './tg-bot';
-
+import { sendMessage } from '@repo/tg-service';
 
 const DEBUG = false;
 
