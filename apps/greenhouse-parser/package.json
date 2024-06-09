@@ -7,12 +7,14 @@
     "author": "",
     "license": "ISC",
     "description": "",
+    "type": "module",
     "devDependencies": {
         "@playwright/test": "^1.44.1",
         "@types/node": "^20.14.2"
     },
     "dependencies": {
         "dotenv": "^16.4.5",
-        "@repo/mongo-service": "*"
+        "@repo/mongo-service": "*",
+        "@repo/tg-service": "*"
     }
 }

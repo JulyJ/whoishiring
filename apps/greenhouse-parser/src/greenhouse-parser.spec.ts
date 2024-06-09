@@ -6,6 +6,8 @@ const DEBUG = false;
 
 const url = process.env.GREENHOUSE_URL || 'https://boards.greenhouse.io';
 const company = process.env.GREENHOUSE_COMPANY || 'reddit';
+const chatId = process.env.TELEGRAM_CHAT_ID || '';
+const botToken = process.env.TELEGRAM_BOT_TOKEN || '';
 
 interface PostData {
   time: number;
@@ -23,7 +25,8 @@ test.describe('Get QA Job Postings for Companies', () => {
 
     await page.waitForSelector('.accessible');
     const posts = await page.$$('.opening');
-
+    let cnt = 0;
+    
     for (const post of posts) {
       const title = await post.evaluate(element => (element.children[0].textContent || '').trim());
       
@@ -49,15 +52,16 @@ test.describe('Get QA Job Postings for Companies', () => {
           };
 
           insertRecord(data)
-          await sendMessage(`
+          cnt ++;
+          await sendMessage(botToken, chatId,`
             ${data.title}
             ${data.location}
             ${data.job_url}
-          `);
+          `, `html`);
       }
       
       };
     }
-
+    console.log(`${cnt} posts added `);
     });
   });
