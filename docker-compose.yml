@@ -125,7 +125,7 @@ services:
         environment:
             MONGODB_URI: ${MONGODB_URI}
             MONGODB_DB: ${MONGODB_DB}
-            MONGODB_COLLECTION: ${JOBS_MONGODB_COLLECTION}
+            MONGODB_COLLECTION: ${RAW_JOBS_TOPIC}
             THREAD_URL: ${THREAD_URL}
 
     ai-job-parser:
@@ -159,8 +159,8 @@ services:
             - redpanda-0
         environment:
             KAFKA_BROKER_URI: ${KAFKA_BROKER_URI}
-            KAFKA_TOPIC: ${KAFKA_TOPIC}
-            JOBS_CONSUMER_OFFSET: ${JOBS_CONSUMER_OFFSET}
+            KAFKA_TOPIC: ${PARSED_JOBS_TOPIC}
+            JOBS_CONSUMER_OFFSET: ${TG_BOT_JOBS_CONSUMER_OFFSET}
             TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
             TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
 
