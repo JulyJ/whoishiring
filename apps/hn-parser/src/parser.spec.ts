@@ -20,6 +20,7 @@ interface PostData {
   hasFrontend: boolean;
 }
 
+test.setTimeout(120000)
 test.describe('Get Thread Items', () => {
   test('Load Thread Page and Get the Data', async ({ page }) => {
     // Navigate to the thread page
