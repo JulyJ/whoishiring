@@ -7,4 +7,4 @@ playwright/.cache/
 .turbo
 .next
 dist/
-
+out/

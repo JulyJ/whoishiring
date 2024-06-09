@@ -122,6 +122,11 @@ services:
             - redpanda_network
         depends_on:
             - mongo1
+        environment:
+            MONGODB_URI: ${MONGODB_URI}
+            MONGODB_DB: ${MONGODB_DB}
+            MONGODB_COLLECTION: ${JOBS_MONGODB_COLLECTION}
+            THREAD_URL: ${THREAD_URL}
 
     ai-job-parser:
         image: ai-job-parser
@@ -133,6 +138,15 @@ services:
         depends_on:
             - mongo1
             - redpanda-0
+        environment:
+            KAFKA_BROKER_URI: ${KAFKA_BROKER_URI}
+            RAW_JOBS_TOPIC: ${RAW_JOBS_TOPIC}
+            JOBS_CONSUMER_OFFSET: ${JOBS_CONSUMER_OFFSET}
+            OPENAI_API_KEY: ${OPENAI_API_KEY}
+            MONGODB_URI: ${MONGODB_URI}
+            MONGODB_DB: ${MONGODB_DB}
+            MONGODB_COLLECTION: ${PARSED_JOBS_MONGODB_COLLECTION}
+            PARSED_JOBS_TOPIC: ${PARSED_JOBS_TOPIC}
 
     tg-bot:
         image: tg-bot
@@ -143,6 +157,12 @@ services:
             - redpanda_network
         depends_on:
             - redpanda-0
+        environment:
+            KAFKA_BROKER_URI: ${KAFKA_BROKER_URI}
+            KAFKA_TOPIC: ${KAFKA_TOPIC}
+            JOBS_CONSUMER_OFFSET: ${JOBS_CONSUMER_OFFSET}
+            TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+            TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
 
 volumes:
     redpanda_data:

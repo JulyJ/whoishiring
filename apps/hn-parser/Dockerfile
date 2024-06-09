@@ -1,23 +1,35 @@
-# Use the official Node.js image
-FROM mcr.microsoft.com/playwright:v1.44.1-jammy
+FROM --platform=linux/amd64 mcr.microsoft.com/playwright:v1.44.1-jammy AS base
 
-# Create a directory for the app
+FROM base AS builder
+WORKDIR /app
+RUN npm i -g turbo
+
+COPY . .
+RUN turbo prune hn-parser --docker
+
+# Add lockfile and package.json's of isolated subworkspace
+FROM base AS installer
 WORKDIR /app
 
-# Copy the package.json, package-lock.json and tsconfig.json files
-COPY package*.json ./
-
-
-# Install dependencies
-RUN npm install
-RUN npm install -g typescript
-
-# Copy the rest of the app files
-COPY . .
-
-# Install Playwright dependencies
+COPY .gitignore .gitignore
+COPY --from=builder /app/out/json/ .
+COPY --from=builder /app/out/package-lock.json ./package-lock.json
+RUN npm i
 RUN npx playwright install --with-deps
 
-# Command to run the parser
-RUN tsc
+# Build the project and its dependencies
+COPY --from=builder /app/out/full/ .
+COPY turbo.json turbo.json
+
+RUN npx turbo build --filter=hn-parser
+
+FROM base AS runner
+WORKDIR /app
+
+RUN addgroup --system --gid 1001 hnparser
+RUN adduser --system --uid 1001 hnparser
+USER hnparser
+
+COPY --from=installer /app .
+
 CMD ["./run-parser.sh"]

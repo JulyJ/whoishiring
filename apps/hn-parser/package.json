@@ -4,6 +4,7 @@
     "description": "Who is hiring thread from Hacker News parser with Playwright",
     "main": "index.js",
     "scripts": {
+        "build": "tsc",
         "check-types": "tsc --noEmit"
     },
     "keywords": [],
@@ -18,9 +19,9 @@
         "typescript": "^5.6.0-dev.20240604"
     },
     "dependencies": {
+        "@repo/mongo-service": "^1.0.0",
         "axios": "^1.7.2",
         "dotenv": "^16.4.5",
-        "mongodb": "^6.7.0",
-        "@repo/mongo-service": "*"
+        "mongodb": "^6.7.0"
     }
 }

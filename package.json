@@ -8,7 +8,10 @@
     "version": "1.0.0",
     "description": "Who is hiring thread Hacker News thread parser with Playwright",
     "main": "index.js",
-    "scripts": {},
+    "scripts": {
+        "build": "turbo run build",
+        "dev": "turbo run dev"
+    },
     "keywords": [],
     "author": "",
     "license": "MIT",
