@@ -76,10 +76,8 @@ export async function checkRecord(data: string): Promise<boolean> {
     const record = await collection.findOne(query);
     
     if (record) {
-      console.log(`Record ${data} exists`);
       return true;
     } else {
-      console.log(`Record ${data} does not exist`);
       return false;
     }
   } finally {
