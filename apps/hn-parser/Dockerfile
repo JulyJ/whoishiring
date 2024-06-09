@@ -26,10 +26,10 @@ RUN npx turbo build --filter=hn-parser
 FROM base AS runner
 WORKDIR /app
 
-RUN addgroup --system --gid 1001 hnparser
-RUN adduser --system --uid 1001 hnparser
-USER hnparser
-
 COPY --from=installer /app .
+
+WORKDIR /app/apps/hn-parser
+
+RUN ["chmod", "+x", "./run-parser.sh"]
 
 CMD ["./run-parser.sh"]

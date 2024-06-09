@@ -21,6 +21,8 @@ export class TgBotConsumer {
         onMessage: (post: any, originalPost: HnJobMessage) => Promise<void>,
         offset?: Offset,
     ) {
+        console.log(`[TgBotConsumer] Creating a new consumer. kafkaBrokerUri: ${kafkaBrokerUri}`);
+
         this.redpanda = new Kafka({
             clientId: "tg-bot-hn-jobs",
             brokers: [kafkaBrokerUri],
@@ -41,11 +43,11 @@ export class TgBotConsumer {
 
             const fromBeginning = this.offset === "beginning";
             await this.consumer.connect();
-            console.log("[TgBotConsumer] Connected to Kafka...");
             await this.consumer.subscribe({
                 fromBeginning,
                 topic: this.topic,
             });
+            console.log("[TgBotConsumer] Connected to Kafka...");
 
             this.consumer.run({
                 eachMessage: async ({ topic, partition, message }) => {
