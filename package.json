@@ -11,7 +11,7 @@
     "scripts": {
         "build": "turbo run build",
         "dev": "turbo run dev",
-        "format": "npx prettier . --check"
+        "check-format": "npx prettier . --check"
     },
     "keywords": [],
     "author": "",
