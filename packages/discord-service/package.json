@@ -1,0 +1,21 @@
+{
+    "name": "@repo/discord-service",
+    "version": "1.0.0",
+    "description": "",
+    "main": "dist/discord-service.js",
+    "types": "dist/discord-service.d.ts",
+    "type": "module",
+    "author": "",
+    "license": "ISC",
+    "scripts": {
+        "build": "tsc"
+    },
+    "dependencies": {
+        "discord.js": "^14.15.3"
+    },
+    "devDependencies": {
+        "@repo/typescript-config": "*",
+        "@types/node": "^20.10.0",
+        "typescript": "^5.4.5"
+    }
+}
