@@ -1,0 +1,5 @@
+# Ignore artifacts:
+node-modules
+test-results
+dist
+package-lock.json
