@@ -6,7 +6,8 @@
         "dev": "tsc && node dist/index.js",
         "build": "tsc",
         "check-types": "tsc --noEmit",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "format": "npx prettier . --check"
     },
     "author": "",
     "license": "ISC",

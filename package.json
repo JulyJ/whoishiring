@@ -18,6 +18,7 @@
     "license": "MIT",
     "packageManager": "npm@10.2.0",
     "devDependencies": {
+        "prettier": "3.3.1",
         "turbo": "^2.0.3"
     }
 }

@@ -2,7 +2,9 @@
     "name": "greenhouse-parser",
     "version": "1.0.0",
     "main": "index.js",
-    "scripts": {},
+    "scripts": {
+        "format": "npx prettier . --check"
+    },
     "keywords": [],
     "author": "",
     "license": "ISC",

@@ -12,6 +12,10 @@
             "persistent": true,
             "cache": false
         },
+        "format": {
+            "persistent": false
+        }
+        },
         "//#format": {}
     }
 }
