@@ -10,6 +10,7 @@
     },
     "keywords": [],
     "author": "",
+    "type": "module",
     "license": "ISC",
     "devDependencies": {
         "@playwright/test": "^1.44.1",
@@ -20,7 +21,9 @@
         "typescript": "^5.6.0-dev.20240604"
     },
     "dependencies": {
-        "@repo/mongo-service": "^1.0.0",
+        "@repo/mongo-service": "*",
+        "@repo/tg-service": "*",
+        "@repo/discord-service": "*",
         "axios": "^1.7.2",
         "dotenv": "^16.4.5",
         "mongodb": "^6.7.0"

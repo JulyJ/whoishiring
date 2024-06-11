@@ -6,7 +6,7 @@ dotenv.config();
 
 const uri: string = process.env.MONGODB_URI || "";
 const dbName: string = process.env.MONGODB_DB || "";
-const dbCollectionName: string = process.env.MONGODB_COLLECTION || "";
+const dbCollection: string = process.env.MONGODB_COLLECTION || "";
 
 interface Data {
     id?: string;
@@ -19,10 +19,10 @@ async function connectToDatabase(): Promise<MongoClient> {
     return client;
 }
 
-export async function insertData(data: Data[]): Promise<void> {
+export async function insertData(data: Data[], dbCollectionName: string = dbCollection): Promise<void> {
     const client = await connectToDatabase();
     const db = client.db(dbName);
-    const collection = db.collection("jobs");
+    const collection = db.collection(dbCollectionName);
 
     try {
         await collection.insertMany(data);
@@ -34,7 +34,7 @@ export async function insertData(data: Data[]): Promise<void> {
     }
 }
 
-export async function insertRecord(data: Data): Promise<void> {
+export async function insertRecord(data: Data, dbCollectionName: string = dbCollection): Promise<void> {
     const client = await connectToDatabase();
     const db = client.db(dbName);
     const collection = db.collection(dbCollectionName);
@@ -49,7 +49,7 @@ export async function insertRecord(data: Data): Promise<void> {
     }
 }
 
-export async function deleteRecord(data: string): Promise<void> {
+export async function deleteRecord(data: string, dbCollectionName: string = dbCollection): Promise<void> {
     const client = await connectToDatabase();
     const db = client.db(dbName);
     const collection = db.collection(dbCollectionName);
@@ -65,7 +65,7 @@ export async function deleteRecord(data: string): Promise<void> {
     }
 }
 
-export async function checkRecord(data: string): Promise<boolean> {
+export async function checkRecord(data: string, dbCollectionName: string = dbCollection): Promise<boolean> {
     const client = await connectToDatabase();
     const db = client.db(dbName);
     const collection = db.collection(dbCollectionName);

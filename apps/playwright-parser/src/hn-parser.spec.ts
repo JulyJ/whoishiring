@@ -1,9 +1,12 @@
 import { test, expect } from "@playwright/test";
 import { checkRecord, insertRecord } from "@repo/mongo-service";
 
+import dotenv from "dotenv";
+dotenv.config();
 const DEBUG = false;
 
 const url = process.env.THREAD_URL || "https://news.ycombinator.com/item?id=40563283";
+const collection = process.env.MONGODB_COLLECTION_HN || "";
 const threadId = url.match(/\d+/)?.[0];
 
 interface PostData {
@@ -49,7 +52,7 @@ test.describe("Get Thread Items", () => {
 
             // If the post already exists, continue to the next one
             if (!DEBUG) {
-                if (id && (await checkRecord(id))) {
+                if (id && (await checkRecord(id, collection))) {
                     continue;
                 }
             }
@@ -109,7 +112,7 @@ test.describe("Get Thread Items", () => {
             // Insert the post details into the database
             if (data) {
                 if (!DEBUG) {
-                    insertRecord(data);
+                    insertRecord(data, collection);
                 } else {
                     console.log(data);
                 }

@@ -2,11 +2,13 @@ import { test, expect } from "@playwright/test";
 import { checkRecord, insertRecord } from "@repo/mongo-service";
 import { sendMessage } from "@repo/tg-service";
 import { sendMessageDiscord } from "@repo/discord-service";
-
+import dotenv from "dotenv";
+dotenv.config();
 const DEBUG = false;
 
 const url = process.env.GREENHOUSE_URL || "https://boards.greenhouse.io";
 const company = process.env.GREENHOUSE_COMPANY || "reddit";
+const collection = process.env.MONGODB_COLLECTION_GH || "";
 const chatId = process.env.TELEGRAM_CHAT_ID || "";
 const botToken = process.env.TELEGRAM_BOT_TOKEN || "";
 const appToken = process.env.DISCORD_BOT_TOKEN || "";
@@ -42,7 +44,7 @@ test.describe("Get QA Job Postings for Companies", () => {
 
                 // If the post already exists, continue to the next one
                 if (!DEBUG) {
-                    if (id && (await checkRecord(id))) {
+                    if (id && (await checkRecord(id, collection))) {
                         continue;
                     }
                     const job_url = `${url}${id_href}`;
@@ -58,8 +60,9 @@ test.describe("Get QA Job Postings for Companies", () => {
                         job_url,
                     };
 
-                    insertRecord(data);
+                    insertRecord(data, collection);
                     cnt++;
+                    console.log("bot: ", botToken);
                     await sendMessage(
                         botToken,
                         chatId,
