@@ -85,7 +85,7 @@ services:
             CONNECT_BOOTSTRAP_SERVERS: "redpanda-0:9092"
             CONNECT_METRICS_ENABLED: "false"
             CONNECT_GC_LOG_ENABLED: "false"
-            CONNECT_HEAP_OPTS: -Xms1G -Xmx1G
+            CONNECT_HEAP_OPTS: -Xms64m -Xmx1G
             #CONNECT_PLUGIN_PATH: "/opt/kafka/connect-plugins"
             CONNECT_AUTO_CREATE_TOPICS_ENABLE: "true"
 
