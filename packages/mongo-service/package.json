@@ -2,9 +2,11 @@
     "name": "@repo/mongo-service",
     "version": "1.0.0",
     "description": "Connector to the Mongo DB",
-    "main": "mongo-service.ts",
-    "private": true,
+    "main": "dist/mongo-service.js",
+    "types": "dist/mongo-service.d.ts",
+    "type": "module",
     "scripts": {
+        "build": "tsc",
         "test": "echo \"Error: no test specified\" && exit 1",
         "format": "npx prettier . --check"
     },
