@@ -32,4 +32,4 @@ WORKDIR /app/apps/hn-parser
 
 RUN ["chmod", "+x", "./run-parser.sh"]
 
-CMD ["./run-parser.sh"]
+CMD ["/bin/bash", "-c", "./run-parser.sh greenhouse-parser && ./run-parser.sh hn-parser"]
