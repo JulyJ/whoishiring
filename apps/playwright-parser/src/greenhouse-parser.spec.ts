@@ -41,7 +41,6 @@ test.describe("Get QA Job Postings for Companies", () => {
                     (element.children[0].getAttribute("href") || "").trim(),
                 );
                 const id = id_href.match(/\d+/)[0];
-
                 // If the post already exists, continue to the next one
                 if (!DEBUG) {
                     if (id && (await checkRecord(id, collection))) {
@@ -62,7 +61,6 @@ test.describe("Get QA Job Postings for Companies", () => {
 
                     insertRecord(data, collection);
                     cnt++;
-                    console.log("bot: ", botToken);
                     await sendMessage(
                         botToken,
                         chatId,
