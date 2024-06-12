@@ -27,13 +27,52 @@ WhoIsHiring is an automated pipeline designed to scrape job postings from differ
 -   AI Parsing: Leverage AI to process and analyze job data.
 -   Multi-Client Support: Deliver processed data to Telegram, Discord, and a web frontend.
 
-## Installation (TODO)
+## Installation
 
 1. Clone the repository:
 
     ```bash
     git clone https://github.com/JulyJ/whoishiring.git
+    cd whoishiring
     ```
 
-2. Setup Environment Variables:
-3. Run the Docker containers
+2. Install dependencies
+
+    ```bash
+    npm install
+    npx playwright install --with-deps
+    ```
+
+3. Copy the .env.example files to .env for each project and update them with your specific configuration.
+
+    ```bash
+    cp .env.example .env
+    ```
+
+4. Run build
+
+    ```bash
+    npx turbo build
+    ```
+
+5. For each service in the project that has its own Dockerfile, you’ll need to build and run the Docker containers. Below are example for how to do this:
+
+    ```bash
+    cd apps/playwright-parser
+    docker build -t whoishiring-playwright-parser
+    docker run -d --name whoishiring-playwright-parser
+    ```
+
+6. To run the run-parser.sh script with different parameters using Docker, you can add a specific section:
+
+    ```bash
+    docker run --rm whoishiring-parser ./run-parser.sh gh
+    ```
+
+7. To stop and remove the containers once you are done, you can use:
+
+    ```bash
+    docker stop whoishiring-playwright-parser
+    docker rm whoishiring-playwright-parser
+
+    ```
