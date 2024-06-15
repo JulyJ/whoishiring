@@ -1,10 +1,24 @@
 const typeDefs = `#graphql
+    type OriginalJob {
+        time: Int,
+        title: String,
+        text: String,
+    }
+
+    type ParsedJob {
+        jobTitle: String
+        jobDescription: String
+        company: String
+        location: String
+        contact: String
+        notes: String
+        parsedUrls: [String]
+    }
+
     type Job {
-        id: ID!
-        title: String!
-        company: String!
-        location: String!
-        description: String!
+        _id: ID!
+        original: String
+        parsed: ParsedJob
     }
 
     type Query {
