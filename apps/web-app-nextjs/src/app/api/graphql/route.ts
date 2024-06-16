@@ -7,7 +7,7 @@ import resolvers from "./resolvers";
 import mongoose from "mongoose";
 import JobsDataSource from "../datasources/jobs.datasource";
 
-interface Context {
+interface GraphqlContext {
     dataSources: {
         jobs: JobsDataSource;
     };
@@ -29,12 +29,12 @@ const connectDB = async () => {
 
 connectDB();
 
-const server = new ApolloServer<Context>({
+const server = new ApolloServer<GraphqlContext>({
     resolvers,
     typeDefs,
 });
 
-const handler = startServerAndCreateNextHandler<NextRequest, Context>(server, {
+const handler = startServerAndCreateNextHandler<NextRequest, GraphqlContext>(server, {
     context: async (req, res) => ({
         req,
         res,

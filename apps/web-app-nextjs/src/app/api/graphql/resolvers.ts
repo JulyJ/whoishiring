@@ -1,10 +1,11 @@
+import { NextRequest, NextResponse } from "next/server";
 import JobsDataSource from "../datasources/jobs.datasource";
 
 const resolvers = {
     Query: {
         jobs: async (
-            _: any,
-            __: any,
+            _req: NextRequest,
+            _res: NextResponse,
             context: {
                 dataSources: {
                     jobs: JobsDataSource;
