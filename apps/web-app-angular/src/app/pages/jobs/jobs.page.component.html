@@ -1,1 +1,16 @@
-<p>jobs.page works!</p>
+<main class="flex-1 py-8 px-4 md:px-6">
+    <div class="container mx-auto">
+        <div class="bg-background rounded-lg shadow-md p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-bold">Job Listings</h2>
+                <div class="flex items-center gap-4"></div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                @for (job of jobs(); track job._id) {
+                    <app-job-card></app-job-card>
+                }
+            </div>
+        </div>
+    </div>
+</main>
