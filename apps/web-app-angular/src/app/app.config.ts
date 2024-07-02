@@ -6,5 +6,10 @@ import { provideHttpClient } from '@angular/common/http';
 import { graphqlProvider } from './graphql.provider';
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes), provideHttpClient(), graphqlProvider]
+    providers: [
+        provideZoneChangeDetection({ eventCoalescing: true }),
+        provideRouter(routes),
+        provideHttpClient(),
+        graphqlProvider,
+    ],
 };
