@@ -18,6 +18,8 @@ RUN npm i
 
 # Build the project and its dependencies
 COPY --from=builder /app/out/full/ .
+COPY .prettierrc .prettierrc
+COPY .prettierignore .prettierignore
 COPY turbo.json turbo.json
 
 RUN npx turbo build --filter=tg-bot

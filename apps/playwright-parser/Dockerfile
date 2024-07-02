@@ -19,6 +19,8 @@ RUN npx playwright install --with-deps
 
 # Build the project and its dependencies
 COPY --from=builder /app/out/full/ .
+COPY .prettierrc .prettierrc
+COPY .prettierignore .prettierignore
 COPY turbo.json turbo.json
 
 RUN npx turbo build --filter=hn-parser
