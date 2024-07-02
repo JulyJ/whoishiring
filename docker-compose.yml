@@ -163,6 +163,7 @@ services:
             JOBS_CONSUMER_OFFSET: ${TG_BOT_JOBS_CONSUMER_OFFSET}
             TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
             TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
+            SENTRY_DSN: ${SENTRY_DSN}
 
 volumes:
     redpanda_data:
