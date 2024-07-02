@@ -35,17 +35,41 @@ const server = new ApolloServer<GraphqlContext>({
 });
 
 const handler = startServerAndCreateNextHandler<NextRequest, GraphqlContext>(server, {
-    context: async (req, res) => ({
-        req,
-        res,
-        dataSources: {
-            jobs: new JobsDataSource(),
-        },
-    }),
+    context: async (req, res) => {
+        return {
+            req,
+            res,
+            dataSources: {
+                jobs: new JobsDataSource(),
+            },
+        };
+    },
 });
-export async function GET(request: NextRequest) {
-    return handler(request);
+
+const handlerWithCors = async (request: NextRequest) => {
+    const response = await handler(request);
+    response.headers.set("Access-Control-Allow-Origin", "*");
+    response.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    response.headers.set("Access-Control-Allow-Headers", "*");
+    response.headers.set("Access-Control-Allow-Credentials", "true");
+    return response;
+};
+
+export async function OPTIONS(_request: NextRequest) {
+    return new Response("", {
+        status: 200,
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+            "Access-Control-Allow-Headers": "*",
+        },
+    });
 }
+
+export async function GET(request: NextRequest) {
+    return handlerWithCors(request);
+}
+
 export async function POST(request: NextRequest) {
-    return handler(request);
+    return handlerWithCors(request);
 }
