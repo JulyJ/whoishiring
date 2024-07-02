@@ -2,6 +2,7 @@ import { TgBotConsumer } from "./consumer.js";
 import { HnJobMessage } from "./models/hn-job-message.js";
 import { sendMessage as tgSendMessage } from "@repo/tg-service";
 import dotenv from "dotenv";
+import { init as sentryInit } from "@sentry/node";
 
 dotenv.config();
 
@@ -92,5 +93,10 @@ async function start() {
 
     await jobConsumer.connect();
 }
+
+sentryInit({
+    dsn: process.env.SENTRY_DSN,
+    tracesSampleRate: 1.0,
+});
 
 start();
