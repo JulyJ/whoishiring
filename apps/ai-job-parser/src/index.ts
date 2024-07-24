@@ -20,7 +20,6 @@ async function start() {
 
     const parseMessage = async (message: HnJobMessage) => {
         const parsed = await openAiBot.parseJobComment(message);
-
         parsed.created = message.time;
         parsed.threadId = message.threadId;
         parsed.author = message.author;
@@ -33,8 +32,8 @@ async function start() {
 
         await parsedJobProducer.sendMessage(message, parsed);
         await mongodbService.insertDocument({
+            ...parsed,
             original: message,
-            parsed: parsed,
         });
     };
 
