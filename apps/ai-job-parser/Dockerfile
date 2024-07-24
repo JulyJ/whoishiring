@@ -31,6 +31,7 @@ RUN addgroup --system --gid 1001 aijobparser
 RUN adduser --system --uid 1001 aijobparser
 USER aijobparser
 
-COPY --from=installer /app .
+COPY --from=installer /app/node_modules ./node_modules
+COPY --from=installer /app/apps/ai-job-parser/dist .
 
-CMD ["node", "apps/ai-job-parser/dist/index.js"]
+CMD ["node", "index.js"]
