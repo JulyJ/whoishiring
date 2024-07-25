@@ -32,7 +32,7 @@ function formatMessage(job: any, originalPost: HnJobMessage) {
     const frontend = job.hasFrontend ? "✅" : "❌";
 
     let description = ogText.slice(1).join("\n");
-    description
+    description = description
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
