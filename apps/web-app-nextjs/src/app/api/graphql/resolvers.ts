@@ -15,7 +15,7 @@ const resolvers = {
             try {
                 return await context.dataSources.jobs.getJobs();
             } catch (error) {
-                console.error("Failed to fetch jobs");
+                console.error("Failed to fetch jobs", error);
             }
         },
     },

@@ -53,11 +53,11 @@ const typeDefs = `#graphql
         contact: String
         notes: String
         parsedUrls: [String]
-        tags: [String]
         created: UnixTimestamp
         threadId: String
         author: String
         date: String
+        tags: [String]
         urls: [String]
         hasRemote: Boolean
         hasQA: Boolean

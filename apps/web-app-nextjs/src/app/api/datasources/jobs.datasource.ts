@@ -23,7 +23,7 @@ interface ParsedJob {
 export default class JobsDataSource {
     async getJobs() {
         const jobsCollection = mongoose.connection.db.collection(process.env.MONGODB_COLLECTION!);
-        const jobs = await jobsCollection.find({}).sort({ "parsed.created": -1 }).limit(10).toArray();
+        const jobs = await jobsCollection.find({}).sort({ created: -1 }).limit(10).toArray();
         return jobs;
     }
 }

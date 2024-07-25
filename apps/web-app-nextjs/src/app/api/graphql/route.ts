@@ -6,6 +6,7 @@ import resolvers from "./resolvers";
 
 import mongoose from "mongoose";
 import JobsDataSource from "../datasources/jobs.datasource";
+import { readFileSync } from "fs";
 
 interface GraphqlContext {
     dataSources: {
