@@ -1,0 +1,46 @@
+scalar UnixTimestamp
+
+type HnThread {
+    id: ID!
+    date: String!
+}
+
+type JobPosting {
+    id: ID!
+    title: String!
+    company: String!
+    description: String!
+    location: String!
+    contact: String
+    parsedUrls: [String!]!
+    tags: [String!]!
+    createdAt: UnixTimestamp!
+    hnThread: HnThread!
+    author: String!
+    date: String!
+    urls: [String!]!
+    hasRemote: Boolean!
+    hasQA: Boolean!
+    hasFrontend: Boolean!
+    text: String!
+}
+
+type Listing {
+    id: ID!
+    title: String!
+    numOfBeds: Int
+    costPerNight: Float
+    closedForBookings: Boolean
+}
+
+input JobPostingFilter {
+    threadId: ID
+    fromDate: UnixTimestamp
+    toDate: UnixTimestamp
+    searchQuery: String
+}
+
+type Query {
+    jobPostings(filter: JobPostingFilter): [JobPosting!]!
+    featuredListings: [Listing!]!
+}
