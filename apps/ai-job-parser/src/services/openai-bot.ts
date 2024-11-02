@@ -32,7 +32,7 @@ export class OpenAIBot {
             response_format: { type: "json_object" },
             messages: [
                 { role: "system", content: this.systemPrompt },
-                { role: "user", content: jobMessage.text },
+                { role: "user", content: jobMessage.text || "" },
             ],
             model: "gpt-3.5-turbo",
         });
