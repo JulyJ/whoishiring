@@ -74,9 +74,10 @@ test.describe("Get Thread Items", () => {
             const author = await post.evaluate((element) =>
                 (element.querySelector("a.hnuser")?.textContent || "").trim(),
             );
-            const date = await post.evaluate((element) =>
-                (element.querySelector("span.age")?.getAttribute("title") || "").trim(),
-            );
+            const date = await post.evaluate((element) => {
+                const rawDate = (element.querySelector("span.age")?.getAttribute("title") || "").trim();
+                return rawDate.split(" ")[0];
+            });
             const hasRemote = /remote/i.test(text || "");
             const hasQA = /qa/i.test(text || "") || /quality/i.test(text || "") || /sdet/i.test(text || "");
             const hasFrontend =
