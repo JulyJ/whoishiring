@@ -1,0 +1,12 @@
+@keyframes rainbow {
+    0% {
+        background-position: calc(90px / sin(150deg)) 50%;
+    }
+}
+.rainbow-gradient {
+    background: repeating-linear-gradient(150deg, #ff6666, orange, yellow, lightgreen, lightblue, violet, #ff6666 90px);
+    background-size: calc(90px / sin(150deg)) 100%;
+}
+.hover-rainbow:hover {
+    animation: rainbow 3s linear infinite;
+}
