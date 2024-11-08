@@ -1,5 +1,5 @@
 import { UnixTimestamp } from "./gql-timestamp.ts";
-import type { Resolvers, JobPostingFilter } from "./types.ts";
+import type { Resolvers } from "./types.ts";
 
 export const resolvers: Resolvers = {
     UnixTimestamp,
@@ -9,6 +9,10 @@ export const resolvers: Resolvers = {
     Query: {
         jobPostings: (_parent, { filter }, context, _info) => {
             return context.dataSources.jobPostingsMongo.getFilteredJobPostings(filter || {});
+        },
+
+        searchJobTags: (_parent, { searchQuery }, context, _info) => {
+            return context.dataSources.jobPostingsMongo.searchJobTags(searchQuery || "");
         },
 
         featuredListings: (_parent, _args, { dataSources }, _info) => {

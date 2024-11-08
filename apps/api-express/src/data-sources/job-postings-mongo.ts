@@ -1,9 +1,10 @@
 import mongoose from "mongoose";
-import type { JobPosting } from "../types.ts";
+import type { JobPosting, JobTag } from "../types.ts";
 import type { JobPostingFilter } from "../types.ts";
 
 export class JobPostingsMongoDataSource {
     private collection: string;
+    private jobTagsCollection: string = "job_tags";
 
     constructor(collection: string) {
         this.collection = collection;
@@ -18,7 +19,7 @@ export class JobPostingsMongoDataSource {
             createdAt: job.created || Date.now(),
             date: job.date || "",
             description: job.description || "",
-            hasFrontend: job.hasFrontend,
+            hasFrontend: job.hasFrontend || false,
             hasQA: job.hasQA || false,
             hasRemote: job.hasRemote || false,
             hnThread: {
@@ -27,7 +28,7 @@ export class JobPostingsMongoDataSource {
             },
             location: job.location || "",
             parsedUrls: job.parsedUrls || [],
-            tags: job.tags || [],
+            tags: Array.from(new Set(job.tags)) || [],
             text: job.original.text || "",
             urls: job.urls || [],
             title: job.title || "",
@@ -60,6 +61,34 @@ export class JobPostingsMongoDataSource {
     //     };
     // }
 
+    private mapJobTag(tag: any): JobTag {
+        return {
+            id: tag._id,
+            tag: tag.tag,
+            count: tag.count,
+        };
+    }
+
+    async searchJobTags(searchQuery: string): Promise<JobTag[]> {
+        const jobsTagsCollection = mongoose.connection.db?.collection(this.jobTagsCollection);
+        if (!jobsTagsCollection) {
+            throw new Error("Job tags collection not found");
+        }
+
+        if (!searchQuery) {
+            const tags = await jobsTagsCollection.find({}).sort({ count: -1 }).limit(10).toArray();
+            return tags.map(this.mapJobTag);
+        }
+
+        const tags = await jobsTagsCollection
+            .find({ tag: { $regex: searchQuery, $options: "i" } })
+            .sort({ count: -1 })
+            .limit(10)
+            .toArray();
+
+        return tags.map(this.mapJobTag);
+    }
+
     async getFilteredJobPostings(filter: JobPostingFilter): Promise<JobPosting[]> {
         const jobsCollection = mongoose.connection.db?.collection(this.collection);
         if (!jobsCollection) {
@@ -85,16 +114,21 @@ export class JobPostingsMongoDataSource {
         }
 
         if (filter.searchQuery) {
-            // query["original.text"] = {
-            //     $regex: filter.searchQuery,
-            //     $options: "i",
-            // };
+            query["original.text"] = {
+                $regex: filter.searchQuery,
+                $options: "i",
+            };
 
-            query.$text = { $search: filter.searchQuery };
-            // query["original.text"] = { $search: filter.searchQuery };
+            // query.$text = { $search: filter.searchQuery };
         }
 
-        const rawJobs = await jobsCollection.find(query).sort({ created: -1 }).limit(100).toArray();
+        if (filter.tags && filter.tags.length > 0) {
+            query.tags = { $all: filter.tags };
+        }
+
+        console.log("Filter", filter, "Query", query);
+
+        const rawJobs = await jobsCollection.find(query).sort({ created: -1 }).limit(25).toArray();
 
         return rawJobs.map(this.mapJobPosting);
     }
@@ -105,7 +139,7 @@ export class JobPostingsMongoDataSource {
             throw new Error("MongoDB collection not found");
         }
 
-        const rawJobs = await jobsCollection.find({}).sort({ created: -1 }).limit(100).toArray();
+        const rawJobs = await jobsCollection.find({}).sort({ created: -1 }).limit(25).toArray();
 
         // Old v2 format
         // return rawJobs.map((job) => {

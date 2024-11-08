@@ -38,9 +38,18 @@ input JobPostingFilter {
     fromDate: UnixTimestamp
     toDate: UnixTimestamp
     searchQuery: String
+    tags: [String!]
+    remoteOnly: Boolean
+}
+
+type JobTag {
+    id: ID!
+    tag: String!
+    count: Int!
 }
 
 type Query {
     jobPostings(filter: JobPostingFilter): [JobPosting!]!
     featuredListings: [Listing!]!
+    searchJobTags(searchQuery: String): [JobTag]!
 }

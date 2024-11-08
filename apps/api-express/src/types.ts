@@ -46,9 +46,18 @@ export type JobPosting = {
 
 export type JobPostingFilter = {
   fromDate?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  remoteOnly?: InputMaybe<Scalars['Boolean']['input']>;
   searchQuery?: InputMaybe<Scalars['String']['input']>;
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
   threadId?: InputMaybe<Scalars['ID']['input']>;
   toDate?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+};
+
+export type JobTag = {
+  __typename?: 'JobTag';
+  count: Scalars['Int']['output'];
+  id: Scalars['ID']['output'];
+  tag: Scalars['String']['output'];
 };
 
 export type Listing = {
@@ -64,11 +73,17 @@ export type Query = {
   __typename?: 'Query';
   featuredListings: Array<Listing>;
   jobPostings: Array<JobPosting>;
+  searchJobTags: Array<Maybe<JobTag>>;
 };
 
 
 export type QueryJobPostingsArgs = {
   filter?: InputMaybe<JobPostingFilter>;
+};
+
+
+export type QuerySearchJobTagsArgs = {
+  searchQuery?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -149,6 +164,7 @@ export type ResolversTypes = {
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   JobPosting: ResolverTypeWrapper<JobPosting>;
   JobPostingFilter: JobPostingFilter;
+  JobTag: ResolverTypeWrapper<JobTag>;
   Listing: ResolverTypeWrapper<Listing>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
@@ -164,6 +180,7 @@ export type ResolversParentTypes = {
   Int: Scalars['Int']['output'];
   JobPosting: JobPosting;
   JobPostingFilter: JobPostingFilter;
+  JobTag: JobTag;
   Listing: Listing;
   Query: {};
   String: Scalars['String']['output'];
@@ -197,6 +214,13 @@ export type JobPostingResolvers<ContextType = DataSourceContext, ParentType exte
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type JobTagResolvers<ContextType = DataSourceContext, ParentType extends ResolversParentTypes['JobTag'] = ResolversParentTypes['JobTag']> = {
+  count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  tag?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type ListingResolvers<ContextType = DataSourceContext, ParentType extends ResolversParentTypes['Listing'] = ResolversParentTypes['Listing']> = {
   closedForBookings?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   costPerNight?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
@@ -209,6 +233,7 @@ export type ListingResolvers<ContextType = DataSourceContext, ParentType extends
 export type QueryResolvers<ContextType = DataSourceContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   featuredListings?: Resolver<Array<ResolversTypes['Listing']>, ParentType, ContextType>;
   jobPostings?: Resolver<Array<ResolversTypes['JobPosting']>, ParentType, ContextType, Partial<QueryJobPostingsArgs>>;
+  searchJobTags?: Resolver<Array<Maybe<ResolversTypes['JobTag']>>, ParentType, ContextType, Partial<QuerySearchJobTagsArgs>>;
 };
 
 export interface UnixTimestampScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['UnixTimestamp'], any> {
@@ -218,6 +243,7 @@ export interface UnixTimestampScalarConfig extends GraphQLScalarTypeConfig<Resol
 export type Resolvers<ContextType = DataSourceContext> = {
   HnThread?: HnThreadResolvers<ContextType>;
   JobPosting?: JobPostingResolvers<ContextType>;
+  JobTag?: JobTagResolvers<ContextType>;
   Listing?: ListingResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   UnixTimestamp?: GraphQLScalarType;
