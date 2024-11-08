@@ -31,7 +31,7 @@ async function start() {
         parsed.hasFrontend = message.hasFrontend;
 
         await parsedJobProducer.sendMessage(message, parsed);
-        await mongodbService.insertDocument({
+        await mongodbService.insertJob({
             ...parsed,
             original: message,
         });
