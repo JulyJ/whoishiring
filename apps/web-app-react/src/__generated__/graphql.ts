@@ -32,7 +32,7 @@ export type SearchTagsQueryVariables = Exact<{
 }>;
 
 
-export type SearchTagsQuery = { __typename?: 'Query', searchJobTags: Array<{ __typename?: 'JobTag', id: string, tag: string, count: number } | null> };
+export type SearchTagsQuery = { __typename?: 'Query', searchJobTags: Array<{ __typename?: 'JobTag', id: string, tag: string, count: number }> };
 
 export type GetLatestJobsQueryVariables = Exact<{
   filter?: InputMaybe<JobPostingFilter>;
