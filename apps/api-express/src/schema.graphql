@@ -51,5 +51,5 @@ type JobTag {
 type Query {
     jobPostings(filter: JobPostingFilter): [JobPosting!]!
     featuredListings: [Listing!]!
-    searchJobTags(searchQuery: String): [JobTag]!
+    searchJobTags(searchQuery: String): [JobTag!]!
 }

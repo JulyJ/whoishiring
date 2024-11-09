@@ -11,6 +11,10 @@ export class JobPostingsMongoDataSource {
     }
 
     private mapJobPosting(job: any): JobPosting {
+        if (job.location && Array.isArray(job.location)) {
+            job.location = job.location.join(", ");
+        }
+
         return {
             id: job._id.toString(),
             author: job.author || "",

@@ -73,7 +73,7 @@ export type Query = {
   __typename?: 'Query';
   featuredListings: Array<Listing>;
   jobPostings: Array<JobPosting>;
-  searchJobTags: Array<Maybe<JobTag>>;
+  searchJobTags: Array<JobTag>;
 };
 
 
@@ -233,7 +233,7 @@ export type ListingResolvers<ContextType = DataSourceContext, ParentType extends
 export type QueryResolvers<ContextType = DataSourceContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   featuredListings?: Resolver<Array<ResolversTypes['Listing']>, ParentType, ContextType>;
   jobPostings?: Resolver<Array<ResolversTypes['JobPosting']>, ParentType, ContextType, Partial<QueryJobPostingsArgs>>;
-  searchJobTags?: Resolver<Array<Maybe<ResolversTypes['JobTag']>>, ParentType, ContextType, Partial<QuerySearchJobTagsArgs>>;
+  searchJobTags?: Resolver<Array<ResolversTypes['JobTag']>, ParentType, ContextType, Partial<QuerySearchJobTagsArgs>>;
 };
 
 export interface UnixTimestampScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['UnixTimestamp'], any> {
