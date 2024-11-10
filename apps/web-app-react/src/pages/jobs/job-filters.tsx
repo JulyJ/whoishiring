@@ -47,13 +47,6 @@ export default function JobFilters({ onFilterChange }: { onFilterChange: (filter
         setTags(newTags);
     };
 
-    const handleTagInputKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter" && tagInput) {
-            e.preventDefault();
-            addTag(tagInput.trim());
-        }
-    };
-
     return (
         <div className="space-y-4">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -116,6 +109,8 @@ export default function JobFilters({ onFilterChange }: { onFilterChange: (filter
             </div>
 
             <div className="space-y-2">
+                {tags.length === 0 && <div className="text-sm mr-2">No tags selected</div>}
+
                 <div className="flex flex-wrap gap-2">
                     {tags.map((tag) => (
                         <Badge key={tag} variant="secondary" className="text-sm">
@@ -133,7 +128,7 @@ export default function JobFilters({ onFilterChange }: { onFilterChange: (filter
                     ))}
                 </div>
 
-                <AddTagInput className="flex gap-2" onAdd={addTag} />
+                <AddTagInput onAdd={addTag} />
             </div>
         </div>
     );
