@@ -48,8 +48,24 @@ type JobTag {
     count: Int!
 }
 
+type PageInfo {
+    endCursor: ID
+    hasNextPage: Boolean!
+}
+
+type JobPostEdge {
+    cursor: ID!
+    node: JobPosting!
+}
+
+type JobPostConnection {
+    edges: [JobPostEdge!]!
+    pageInfo: PageInfo!
+}
+
 type Query {
     jobPostings(filter: JobPostingFilter): [JobPosting!]!
+    jobPostsPaginated(limit: Int!, cursor: ID, filter: JobPostingFilter): JobPostConnection!
     featuredListings: [Listing!]!
     searchJobTags(searchQuery: String): [JobTag!]!
 }

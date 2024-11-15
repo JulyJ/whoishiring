@@ -11,6 +11,13 @@ export const resolvers: Resolvers = {
             return context.dataSources.jobPostingsMongo.getFilteredJobPostings(filter || {});
         },
 
+        jobPostsPaginated(_parent, { limit, cursor, filter }, context, _info) {
+            return context.dataSources.jobPostingsMongo.getPaginatedJobPostings(filter || {}, {
+                limit,
+                cursor: cursor || undefined,
+            });
+        },
+
         searchJobTags: (_parent, { searchQuery }, context, _info) => {
             return context.dataSources.jobPostingsMongo.searchJobTags(searchQuery || "");
         },

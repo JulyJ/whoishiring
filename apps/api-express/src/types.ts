@@ -7,6 +7,7 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: 
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: { input: string; output: string; }
@@ -21,6 +22,18 @@ export type HnThread = {
   __typename?: 'HnThread';
   date: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+};
+
+export type JobPostConnection = {
+  __typename?: 'JobPostConnection';
+  edges: Array<JobPostEdge>;
+  pageInfo: PageInfo;
+};
+
+export type JobPostEdge = {
+  __typename?: 'JobPostEdge';
+  cursor: Scalars['ID']['output'];
+  node: JobPosting;
 };
 
 export type JobPosting = {
@@ -69,16 +82,30 @@ export type Listing = {
   title: Scalars['String']['output'];
 };
 
+export type PageInfo = {
+  __typename?: 'PageInfo';
+  endCursor?: Maybe<Scalars['ID']['output']>;
+  hasNextPage: Scalars['Boolean']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
   featuredListings: Array<Listing>;
   jobPostings: Array<JobPosting>;
+  jobPostsPaginated: JobPostConnection;
   searchJobTags: Array<JobTag>;
 };
 
 
 export type QueryJobPostingsArgs = {
   filter?: InputMaybe<JobPostingFilter>;
+};
+
+
+export type QueryJobPostsPaginatedArgs = {
+  cursor?: InputMaybe<Scalars['ID']['input']>;
+  filter?: InputMaybe<JobPostingFilter>;
+  limit: Scalars['Int']['input'];
 };
 
 
@@ -162,10 +189,13 @@ export type ResolversTypes = {
   HnThread: ResolverTypeWrapper<HnThread>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
+  JobPostConnection: ResolverTypeWrapper<JobPostConnection>;
+  JobPostEdge: ResolverTypeWrapper<JobPostEdge>;
   JobPosting: ResolverTypeWrapper<JobPosting>;
   JobPostingFilter: JobPostingFilter;
   JobTag: ResolverTypeWrapper<JobTag>;
   Listing: ResolverTypeWrapper<Listing>;
+  PageInfo: ResolverTypeWrapper<PageInfo>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   UnixTimestamp: ResolverTypeWrapper<Scalars['UnixTimestamp']['output']>;
@@ -178,10 +208,13 @@ export type ResolversParentTypes = {
   HnThread: HnThread;
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
+  JobPostConnection: JobPostConnection;
+  JobPostEdge: JobPostEdge;
   JobPosting: JobPosting;
   JobPostingFilter: JobPostingFilter;
   JobTag: JobTag;
   Listing: Listing;
+  PageInfo: PageInfo;
   Query: {};
   String: Scalars['String']['output'];
   UnixTimestamp: Scalars['UnixTimestamp']['output'];
@@ -190,6 +223,18 @@ export type ResolversParentTypes = {
 export type HnThreadResolvers<ContextType = DataSourceContext, ParentType extends ResolversParentTypes['HnThread'] = ResolversParentTypes['HnThread']> = {
   date?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type JobPostConnectionResolvers<ContextType = DataSourceContext, ParentType extends ResolversParentTypes['JobPostConnection'] = ResolversParentTypes['JobPostConnection']> = {
+  edges?: Resolver<Array<ResolversTypes['JobPostEdge']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type JobPostEdgeResolvers<ContextType = DataSourceContext, ParentType extends ResolversParentTypes['JobPostEdge'] = ResolversParentTypes['JobPostEdge']> = {
+  cursor?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['JobPosting'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -230,9 +275,16 @@ export type ListingResolvers<ContextType = DataSourceContext, ParentType extends
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type PageInfoResolvers<ContextType = DataSourceContext, ParentType extends ResolversParentTypes['PageInfo'] = ResolversParentTypes['PageInfo']> = {
+  endCursor?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  hasNextPage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type QueryResolvers<ContextType = DataSourceContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   featuredListings?: Resolver<Array<ResolversTypes['Listing']>, ParentType, ContextType>;
   jobPostings?: Resolver<Array<ResolversTypes['JobPosting']>, ParentType, ContextType, Partial<QueryJobPostingsArgs>>;
+  jobPostsPaginated?: Resolver<ResolversTypes['JobPostConnection'], ParentType, ContextType, RequireFields<QueryJobPostsPaginatedArgs, 'limit'>>;
   searchJobTags?: Resolver<Array<ResolversTypes['JobTag']>, ParentType, ContextType, Partial<QuerySearchJobTagsArgs>>;
 };
 
@@ -242,9 +294,12 @@ export interface UnixTimestampScalarConfig extends GraphQLScalarTypeConfig<Resol
 
 export type Resolvers<ContextType = DataSourceContext> = {
   HnThread?: HnThreadResolvers<ContextType>;
+  JobPostConnection?: JobPostConnectionResolvers<ContextType>;
+  JobPostEdge?: JobPostEdgeResolvers<ContextType>;
   JobPosting?: JobPostingResolvers<ContextType>;
   JobTag?: JobTagResolvers<ContextType>;
   Listing?: ListingResolvers<ContextType>;
+  PageInfo?: PageInfoResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   UnixTimestamp?: GraphQLScalarType;
 };

@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import type { JobPosting, JobTag } from "../types.ts";
 import type { JobPostingFilter } from "../types.ts";
+import { mongo } from "mongoose";
+import { JobPostConnection } from "../types.ts";
 
 export class JobPostingsMongoDataSource {
     private collection: string;
@@ -91,6 +93,83 @@ export class JobPostingsMongoDataSource {
             .toArray();
 
         return tags.map(this.mapJobTag);
+    }
+
+    async getPaginatedJobPostings(
+        filter: JobPostingFilter,
+        pagination: { limit: number; cursor?: string },
+    ): Promise<JobPostConnection> {
+        const jobsCollection = mongoose.connection.db?.collection(this.collection);
+        if (!jobsCollection) {
+            throw new Error("MongoDB collection not found");
+        }
+
+        let query: any = {};
+
+        if (pagination.cursor) {
+            query._id = { $lt: new mongo.ObjectId(pagination.cursor) };
+        }
+
+        if (filter.fromDate || filter.toDate) {
+            query.created = {};
+        }
+
+        if (filter.fromDate) {
+            query.created!["$gte"] = filter.fromDate;
+        }
+
+        if (filter.toDate) {
+            query.created!["$lte"] = filter.toDate;
+        }
+
+        if (filter.threadId) {
+            query["original.threadId"] = filter.threadId;
+        }
+
+        if (filter.searchQuery) {
+            query["original.text"] = {
+                $regex: filter.searchQuery,
+                $options: "i",
+            };
+        }
+
+        if (filter.tags && filter.tags.length > 0) {
+            query.tags = { $all: filter.tags };
+        }
+
+        const limit = Math.min(pagination.limit, 25) + 1;
+        const rawJobs = await jobsCollection.find(query).sort({ _id: -1 }).limit(limit).toArray();
+
+        const hasNextPage = rawJobs.length > pagination.limit;
+        const edges = hasNextPage ? rawJobs.slice(0, -1) : rawJobs;
+        const endCursor = edges.length > 0 ? edges[edges.length - 1]._id.toString() : null;
+
+        console.log(
+            "Filter",
+            filter,
+            "Pagination: ",
+            pagination,
+            "Query",
+            query,
+            "Has next page",
+            hasNextPage,
+            "End cursor",
+            endCursor,
+        );
+
+        return {
+            edges: edges.map((edge) => {
+                const mapped = this.mapJobPosting(edge);
+                return {
+                    cursor: mapped.id,
+                    node: mapped,
+                };
+            }),
+            pageInfo: {
+                hasNextPage,
+                endCursor,
+            },
+        };
     }
 
     async getFilteredJobPostings(filter: JobPostingFilter): Promise<JobPosting[]> {
