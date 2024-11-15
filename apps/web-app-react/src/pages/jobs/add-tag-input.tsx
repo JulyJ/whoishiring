@@ -20,10 +20,10 @@ const SEARCH_TAGS = gql(`
 export default function AddTagInput({ onAdd, className }: { onAdd: (tag: string) => void; className?: string }) {
     const [tagInput, setTagInput] = useState("");
 
-    const debouncedSearch = useDebounce(tagInput, 200);
+    // const debouncedSearch = useDebounce(tagInput, 200);
 
     const { data, loading } = useQuery(SEARCH_TAGS, {
-        variables: { searchQuery: debouncedSearch },
+        variables: { searchQuery: tagInput },
     });
 
     const addTag = (tag: string) => {

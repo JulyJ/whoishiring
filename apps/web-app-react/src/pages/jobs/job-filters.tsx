@@ -1,5 +1,5 @@
 import { Input } from "@/components/ui/input";
-import { useState, KeyboardEvent, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { DateRange } from "react-day-picker";
 import { Calendar as CalendarIcon, X } from "lucide-react";
 import { format } from "date-fns";
@@ -16,7 +16,6 @@ export default function JobFilters({ onFilterChange }: { onFilterChange: (filter
     const [searchQuery, setSearchQuery] = useState("");
     const [dateRange, setDateRange] = useState<DateRange | undefined>();
     const [tags, setTags] = useState<string[]>([]);
-    const [tagInput, setTagInput] = useState("");
     const [remoteOnly, setRemoteOnly] = useState(false);
 
     const debouncedSearch = useDebounce(searchQuery, 150);
@@ -109,7 +108,7 @@ export default function JobFilters({ onFilterChange }: { onFilterChange: (filter
             </div>
 
             <div className="space-y-2">
-                {tags.length === 0 && <div className="text-sm mr-2">No tags selected</div>}
+                {tags.length === 0 && <div className="text-gray-400 text-sm mr-2">No tags selected</div>}
 
                 <div className="flex flex-wrap gap-2">
                     {tags.map((tag) => (
