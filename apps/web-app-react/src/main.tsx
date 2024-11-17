@@ -10,7 +10,9 @@ const client = new ApolloClient({
         typePolicies: {
             Query: {
                 fields: {
-                    jobPostsPaginated: relayStylePagination(),
+                    jobPostsPaginated: relayStylePagination((args: any) => {
+                        return ["filter"];
+                    }),
                 },
             },
         },

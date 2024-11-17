@@ -2,7 +2,7 @@ import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
 import { DateRange } from "react-day-picker";
 import { Calendar as CalendarIcon, X } from "lucide-react";
-import { format } from "date-fns";
+import { endOfDay, format, isValid, startOfDay } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
@@ -25,10 +25,21 @@ export default function JobFilters({ onFilterChange }: { onFilterChange: (filter
     }, [debouncedSearch, dateRange, tags, remoteOnly]);
 
     const handleFilterChange = () => {
+        let timestampFrom: number | undefined;
+        let timestampTo: number | undefined;
+
+        if (dateRange?.from && isValid(dateRange.from)) {
+            timestampFrom = startOfDay(dateRange.from).getTime();
+        }
+
+        if (dateRange?.to && isValid(dateRange.to)) {
+            timestampTo = endOfDay(dateRange.to).getTime();
+        }
+
         onFilterChange({
             searchQuery: debouncedSearch,
-            fromDate: dateRange?.from,
-            toDate: dateRange?.to,
+            fromDate: dateRange?.from?.getTime(),
+            toDate: dateRange?.to?.getTime(),
             tags,
             remoteOnly,
         });
