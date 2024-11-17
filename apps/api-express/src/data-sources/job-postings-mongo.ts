@@ -1,8 +1,6 @@
-import mongoose from "mongoose";
-import type { JobPosting, JobTag } from "../types.ts";
-import type { JobPostingFilter } from "../types.ts";
-import { mongo } from "mongoose";
-import { JobPostConnection } from "../types.ts";
+import mongoose from "npm:mongoose";
+import type { JobPosting, JobTag, JobPostingFilter, JobPostConnection, NewJobCount } from "../types.ts";
+import { mongo } from "npm:mongoose";
 
 export class JobPostingsMongoDataSource {
     private collection: string;
@@ -67,6 +65,7 @@ export class JobPostingsMongoDataSource {
     //     };
     // }
 
+    // deno-lint-ignore no-explicit-any
     private mapJobTag(tag: any): JobTag {
         return {
             id: tag._id,
@@ -104,9 +103,47 @@ export class JobPostingsMongoDataSource {
             throw new Error("MongoDB collection not found");
         }
 
+        const query = this.getFilterQuery(filter, pagination);
+
+        const limit = Math.min(pagination.limit, 25) + 1;
+        const rawJobs = await jobsCollection.find(query).sort({ _id: -1 }).limit(limit).toArray();
+
+        const hasNextPage = rawJobs.length > pagination.limit;
+        const edges = hasNextPage ? rawJobs.slice(0, -1) : rawJobs;
+        const endCursor = edges.length > 0 ? edges[edges.length - 1]._id.toString() : null;
+
+        console.log(
+            "Filter",
+            filter,
+            "Pagination: ",
+            pagination,
+            "Query",
+            query,
+            "Has next page",
+            hasNextPage,
+            "End cursor",
+            endCursor,
+        );
+
+        return {
+            edges: edges.map((edge: any) => {
+                const mapped = this.mapJobPosting(edge);
+                return {
+                    cursor: mapped.id,
+                    node: mapped,
+                };
+            }),
+            pageInfo: {
+                hasNextPage,
+                endCursor,
+            },
+        };
+    }
+
+    getFilterQuery(filter: JobPostingFilter, pagination?: { limit: number; cursor?: string }): any {
         let query: any = {};
 
-        if (pagination.cursor) {
+        if (pagination && pagination.cursor) {
             query._id = { $lt: new mongo.ObjectId(pagination.cursor) };
         }
 
@@ -137,38 +174,20 @@ export class JobPostingsMongoDataSource {
             query.tags = { $all: filter.tags };
         }
 
-        const limit = Math.min(pagination.limit, 25) + 1;
-        const rawJobs = await jobsCollection.find(query).sort({ _id: -1 }).limit(limit).toArray();
+        return query;
+    }
 
-        const hasNextPage = rawJobs.length > pagination.limit;
-        const edges = hasNextPage ? rawJobs.slice(0, -1) : rawJobs;
-        const endCursor = edges.length > 0 ? edges[edges.length - 1]._id.toString() : null;
+    async getNewJobsCount(lastFetchedTimestamp: number, filter: JobPostingFilter): Promise<NewJobCount> {
+        const jobsCollection = mongoose.connection.db?.collection(this.collection);
+        if (!jobsCollection) {
+            throw new Error("MongoDB collection not found");
+        }
 
-        console.log(
-            "Filter",
-            filter,
-            "Pagination: ",
-            pagination,
-            "Query",
-            query,
-            "Has next page",
-            hasNextPage,
-            "End cursor",
-            endCursor,
-        );
+        const query = this.getFilterQuery({ ...filter, toDate: null, fromDate: lastFetchedTimestamp });
+        const count = await jobsCollection.countDocuments(query);
 
         return {
-            edges: edges.map((edge) => {
-                const mapped = this.mapJobPosting(edge);
-                return {
-                    cursor: mapped.id,
-                    node: mapped,
-                };
-            }),
-            pageInfo: {
-                hasNextPage,
-                endCursor,
-            },
+            count: count,
         };
     }
 

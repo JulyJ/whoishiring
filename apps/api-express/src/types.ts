@@ -82,6 +82,11 @@ export type Listing = {
   title: Scalars['String']['output'];
 };
 
+export type NewJobCount = {
+  __typename?: 'NewJobCount';
+  count: Scalars['Int']['output'];
+};
+
 export type PageInfo = {
   __typename?: 'PageInfo';
   endCursor?: Maybe<Scalars['ID']['output']>;
@@ -93,6 +98,7 @@ export type Query = {
   featuredListings: Array<Listing>;
   jobPostings: Array<JobPosting>;
   jobPostsPaginated: JobPostConnection;
+  newJobCount: NewJobCount;
   searchJobTags: Array<JobTag>;
 };
 
@@ -106,6 +112,12 @@ export type QueryJobPostsPaginatedArgs = {
   cursor?: InputMaybe<Scalars['ID']['input']>;
   filter?: InputMaybe<JobPostingFilter>;
   limit: Scalars['Int']['input'];
+};
+
+
+export type QueryNewJobCountArgs = {
+  filter?: InputMaybe<JobPostingFilter>;
+  lastFetchedTimestamp?: InputMaybe<Scalars['UnixTimestamp']['input']>;
 };
 
 
@@ -195,6 +207,7 @@ export type ResolversTypes = {
   JobPostingFilter: JobPostingFilter;
   JobTag: ResolverTypeWrapper<JobTag>;
   Listing: ResolverTypeWrapper<Listing>;
+  NewJobCount: ResolverTypeWrapper<NewJobCount>;
   PageInfo: ResolverTypeWrapper<PageInfo>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
@@ -214,6 +227,7 @@ export type ResolversParentTypes = {
   JobPostingFilter: JobPostingFilter;
   JobTag: JobTag;
   Listing: Listing;
+  NewJobCount: NewJobCount;
   PageInfo: PageInfo;
   Query: {};
   String: Scalars['String']['output'];
@@ -275,6 +289,11 @@ export type ListingResolvers<ContextType = DataSourceContext, ParentType extends
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type NewJobCountResolvers<ContextType = DataSourceContext, ParentType extends ResolversParentTypes['NewJobCount'] = ResolversParentTypes['NewJobCount']> = {
+  count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type PageInfoResolvers<ContextType = DataSourceContext, ParentType extends ResolversParentTypes['PageInfo'] = ResolversParentTypes['PageInfo']> = {
   endCursor?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   hasNextPage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -285,6 +304,7 @@ export type QueryResolvers<ContextType = DataSourceContext, ParentType extends R
   featuredListings?: Resolver<Array<ResolversTypes['Listing']>, ParentType, ContextType>;
   jobPostings?: Resolver<Array<ResolversTypes['JobPosting']>, ParentType, ContextType, Partial<QueryJobPostingsArgs>>;
   jobPostsPaginated?: Resolver<ResolversTypes['JobPostConnection'], ParentType, ContextType, RequireFields<QueryJobPostsPaginatedArgs, 'limit'>>;
+  newJobCount?: Resolver<ResolversTypes['NewJobCount'], ParentType, ContextType, Partial<QueryNewJobCountArgs>>;
   searchJobTags?: Resolver<Array<ResolversTypes['JobTag']>, ParentType, ContextType, Partial<QuerySearchJobTagsArgs>>;
 };
 
@@ -299,6 +319,7 @@ export type Resolvers<ContextType = DataSourceContext> = {
   JobPosting?: JobPostingResolvers<ContextType>;
   JobTag?: JobTagResolvers<ContextType>;
   Listing?: ListingResolvers<ContextType>;
+  NewJobCount?: NewJobCountResolvers<ContextType>;
   PageInfo?: PageInfoResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   UnixTimestamp?: GraphQLScalarType;

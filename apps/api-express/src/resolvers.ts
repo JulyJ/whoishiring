@@ -18,6 +18,10 @@ export const resolvers: Resolvers = {
             });
         },
 
+        newJobCount(_parent, { lastFetchedTimestamp, filter }, context, _info) {
+            return context.dataSources.jobPostingsMongo.getNewJobsCount(lastFetchedTimestamp, filter || {});
+        },
+
         searchJobTags: (_parent, { searchQuery }, context, _info) => {
             return context.dataSources.jobPostingsMongo.searchJobTags(searchQuery || "");
         },

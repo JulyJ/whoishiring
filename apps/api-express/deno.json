@@ -13,7 +13,7 @@
         "graphql": "npm:graphql@^16.9.0",
         "graphql-tag": "npm:graphql-tag@^2.12.6",
         "mongodb": "npm:mongodb@^6.9.0",
-        "mongoose": "npm:mongoose@^8.7.1"
+        "mongoose": "npm:mongoose@^8.8.1"
     },
     "nodeModulesDir": "auto",
     "compilerOptions": {}

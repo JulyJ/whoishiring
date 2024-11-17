@@ -63,9 +63,14 @@ type JobPostConnection {
     pageInfo: PageInfo!
 }
 
+type NewJobCount {
+    count: Int!
+}
+
 type Query {
     jobPostings(filter: JobPostingFilter): [JobPosting!]!
     jobPostsPaginated(limit: Int!, cursor: ID, filter: JobPostingFilter): JobPostConnection!
+    newJobCount(lastFetchedTimestamp: UnixTimestamp!, filter: JobPostingFilter): NewJobCount!
     featuredListings: [Listing!]!
     searchJobTags(searchQuery: String): [JobTag!]!
 }
