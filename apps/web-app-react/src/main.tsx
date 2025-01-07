@@ -5,6 +5,14 @@ import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import App from "./App";
 import { relayStylePagination } from "@apollo/client/utilities";
 
+const apiUrl = import.meta.env.VITE_JOBS_API_URL;
+
+console.log("apiUrl", apiUrl);
+
+if (!apiUrl) {
+    throw new Error("VITE_JOBS_API_URL is not defined");
+}
+
 const client = new ApolloClient({
     cache: new InMemoryCache({
         typePolicies: {
@@ -17,7 +25,7 @@ const client = new ApolloClient({
             },
         },
     }),
-    uri: "http://localhost:4000/",
+    uri: apiUrl,
 });
 
 createRoot(document.getElementById("root")!).render(

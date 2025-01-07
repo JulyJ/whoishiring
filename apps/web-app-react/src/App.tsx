@@ -8,9 +8,6 @@ export default function App() {
             <Routes>
                 <Route element={<JobsPage />} path="/" />
                 <Route element={<AddJobPage />} path="/add" />
-                {/*
-<Route element={<Track />} path="/track/:trackId" />
-                    */}
             </Routes>
         </BrowserRouter>
     );

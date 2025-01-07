@@ -165,6 +165,33 @@ services:
             TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
             SENTRY_DSN: ${SENTRY_DSN}
 
+    api-express:
+          image: hnjobs-api-express:latest
+          networks:
+              - jobs_parser_network
+          restart: on-failure
+          deploy:
+              restart_policy:
+                  condition: on-failure
+                  max_attempts: 5
+          depends_on:
+              - mongo1
+          environment:
+              MONGO_DB_URI: ${MONGODB_FULL_URI}
+              MONGO_DB_PARSED_JOBS_COLLECTION: ${PARSED_JOBS_MONGODB_COLLECTION}
+
+      web-app-react:
+          image: hnjobs-web-app-react:latest
+          networks:
+              - jobs_parser_network
+          restart: on-failure
+          deploy:
+              restart_policy:
+                condition: on-failure
+                max_attempts: 5
+          depends_on:
+              - api-express
+
 volumes:
     redpanda_data:
     redpanda_tmp:
